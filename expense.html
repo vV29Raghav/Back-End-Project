@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Expense Tracker</title>
+    <!-- <link rel="stylesheet" href="expense.css"> -->
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+input, textarea {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f8f8;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+li button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+li button:hover {
+    background-color: #c82333;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <form id="expense-form">
+            <input type="text" id="expense-name" placeholder="Expense Name" required>
+            <input type="number" id="expense-amount" placeholder="Amount" required>
+            <input type="date" id="expense-date" required>
+            <input type="text" id="expense-category" placeholder="Category" required>
+            <textarea id="expense-description" placeholder="Description" required></textarea>
+            <button type="submit">Add Expense</button>
+        </form>
+        <h2>Total: $<span id="total-amount">0</span></h2>
+        <table id="expense-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="expense-list"></tbody>
+        </table>
+    </div>
+    <script >
+    document.getElementById('expense-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const expenseName = document.getElementById('expense-name').value;
+    const expenseAmount = parseFloat(document.getElementById('expense-amount').value);
+    const expenseDate = document.getElementById('expense-date').value;
+    const expenseCategory = document.getElementById('expense-category').value;
+    const expenseDescription = document.getElementById('expense-description').value;
+
+    if (expenseName && expenseAmount && expenseDate && expenseCategory && expenseDescription) {
+        const expense = {
+            id: Date.now(),
+            name: expenseName,
+            amount: expenseAmount,
+            date: expenseDate,
+            category: expenseCategory,
+            description: expenseDescription
+        };
+        
+        addExpense(expense);
+        updateTotal(expense.amount);
+        document.getElementById('expense-form').reset();
+    }
+});
+
+function addExpense(expense) {
+    const expenseList = document.getElementById('expense-list');
+    const row = document.createElement('tr');
+    row.setAttribute('data-id', expense.id);
+
+    row.innerHTML = `
+        <td>${expense.name}</td>
+        <td>$${expense.amount.toFixed(2)}</td>
+        <td>${expense.date}</td>
+        <td>${expense.category}</td>
+        <td>${expense.description}</td>
+        <td><button onclick="deleteExpense(${expense.id}, ${expense.amount})">Delete</button></td>
+    `;
+
+    expenseList.appendChild(row);
+}
+
+function deleteExpense(id, amount) {
+    document.querySelector(`tr[data-id='${id}']`).remove();
+    updateTotal(-amount);
+}
+
+function updateTotal(amount) {
+    const totalAmountElement = document.getElementById('total-amount');
+    let currentTotal = parseFloat(totalAmountElement.textContent);
+    currentTotal += amount;
+    totalAmountElement.textContent = currentTotal.toFixed(2);
+}
+
+    </script>
+</body>
+</html>
